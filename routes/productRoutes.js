@@ -5,6 +5,8 @@ const {
     getAllProducts, createProduct, getSingleProduct, updateProduct, deleteProduct, uploadImage
 } =  require('../controllers/productController')
 
+const { getSingleProductReviews } = require('../controllers/reviewController')
+
 const {
     authenticateUser,
     authorizePermissions
@@ -21,5 +23,7 @@ router.route('/:id')
 .get(getSingleProduct)
 .patch(authenticateUser, authorizePermissions('admin'), updateProduct)
 .delete(authenticateUser, authorizePermissions('admin'), deleteProduct)
+
+router.route('/:id/reviews').get(getSingleProductReviews)
 
 module.exports = router

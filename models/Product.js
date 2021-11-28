@@ -56,12 +56,34 @@ const ProductSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    numOfReviews:{
+        type: Number,
+        default: 0
+    },
     user:{
         type: mongoose.Types.ObjectId,
         ref: 'User',
         required: true,
     }
-}, {timestamps: true} )
+}, {timestamps: true , toJSON:{virtuals:true}, toObject: { virtuals: true}} )
 
+ProductSchema.virtual('reviews', {
+    ref: 'Review',
+    localField:'_id',
+    foreignField: 'product',
+    justOne: false,
+    // match: {rating : 5}
+})
+
+ProductSchema.pre('remove', async function(next){
+    await this.model('Review').deleteMany({product: this._id})
+})
+
+// 'reviews' is just a name we used, it could be any name, we are then telling the logic of how to populate reviews, refer Reviewmodel,
+// the localfield of Product _id is connected with the foreign foeld of product of Review, and we don't want just a single entity 
+
+// match is used to specify and filter the type of rating we want
+
+// reviews is a virtual property so we can't query it, we'll just get all the reviews on the basis of what we put in ProductSchema.virtual
 
 module.exports = mongoose.model('Product', ProductSchema)
